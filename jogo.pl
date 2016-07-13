@@ -1,0 +1,547 @@
+:- use_module(library(clpfd)).
+
+/*Aqui o programa inicia o jogo e verifica se o numero de elementos da lista são 16, 36, 64 ou 100. Se sim podemos continuar (significa que é uma matriz quadrada 4x4, 6x6, 8x8, 10x10).*/
+
+jogo(L):-
+	length(L,16),
+	jogo4x4(L),!.
+jogo(L):-
+	length(L,36),
+	jogo6x6(L),!.
+jogo(L):-
+	length(L,64),
+	jogo8x8(L),!.
+jogo(L):-
+	length(L,100),
+	jogo10x10(L),!.
+
+/*Aqui procederemos à verificação da lista para verificar se é uma solução válida ou não.*/
+
+
+jogo4x4(L):-
+	L=[L11,L12,L13,L14,
+	   L21,L22,L23,L24,                      /*Comecamos por identificar cada elemento da lista.*/
+	   L31,L32,L33,L34,
+	   L41,L42,L43,L44],
+
+/*Depois dispomos os elementos por listas de linhas (Rows).*/
+
+        Row1=[L11,L12,L13,L14],
+	Row2=[L21,L22,L23,L24],
+	Row3=[L31,L32,L33,L34],
+	Row4=[L41,L42,L43,L44],
+
+/*E também por colunas (Cols)*/
+
+	Col1=[L11,L21,L31,L41],
+	Col2=[L12,L22,L32,L42],
+	Col3=[L13,L23,L33,L43],
+	Col4=[L14,L24,L34,L44],
+
+/*Depois usamos o compare_list que verifica se duas listas são iguais. Se sim devolve true se não false. O uso do not serve para inverter true ou false porque nós queremos que duas linhas ou colunas sejam diferentes (1º Regra do jogo).*/
+
+        not(compare_list(Row1,Row2)),
+	not(compare_list(Row1,Row3)),
+	not(compare_list(Row1,Row4)),
+	not(compare_list(Row2,Row3)),
+	not(compare_list(Row2,Row4)),
+	not(compare_list(Row3,Row4)),
+
+	not(compare_list(Col1,Col2)),
+	not(compare_list(Col1,Col3)),
+	not(compare_list(Col1,Col4)),
+	not(compare_list(Col2,Col3)),
+	not(compare_list(Col2,Col4)),
+	not(compare_list(Col3,Col4)),
+
+/*O count é usado pois o número de 1 e 0 tem de ser iguais (No caso do 4x4 é 2, 2ºRegra do Jogo). Basta verificarmos para o caso do 0 porque se falhar em 0 tambem falha em 1 e se não falhar em 0 não falha em 1.*/
+
+        count(Row1,0,2),
+	count(Row2,0,2),
+	count(Row3,0,2),
+	count(Row4,0,2),
+
+	count(Col1,0,2),
+	count(Col2,0,2),
+	count(Col3,0,2),
+	count(Col4,0,2),
+
+/*Aqui procedemos à verificacação da 3ºRegra do Jogo. Aqui decidimos, para verificar se cada lista de linhas ou colunas tivesse mais de 2 elementos consecutivos, usar dois dos exercicios que o professor propos para nos fazermos. Assim fazemos o encode directo das linhas e colunas e depois quando fazemos o decode verificamos se em cada sub-lista [N,X] o N<3. Se for entao continua e devolve true se nao devolve false.*/
+
+        encode_direct(Row1,A),
+	decode(A,Row1),
+	encode_direct(Row2,B),
+	decode(B,Row2),
+	encode_direct(Row3,C),
+	decode(C,Row3),
+	encode_direct(Row4,D),
+	decode(D,Row4),
+
+	encode_direct(Col1,A),
+	decode(A,Col1),
+	encode_direct(Col2,B),
+	decode(B,Col2),
+	encode_direct(Col3,C),
+	decode(C,Col3),
+	encode_direct(Col4,D),
+	decode(D,Col4).
+
+
+
+
+
+jogo6x6(L):-
+	L=[L11,L12,L13,L14,L15,L16,
+	   L21,L22,L23,L24,L25,L26,
+	   L31,L32,L33,L34,L35,L36,
+	   L41,L42,L43,L44,L45,L46,
+	   L51,L52,L53,L54,L55,L56,
+	   L61,L62,L63,L64,L65,L66],
+
+	Row1=[L11,L12,L13,L14,L15,L16],
+	Row2=[L21,L22,L23,L24,L25,L26],
+	Row3=[L31,L32,L33,L34,L35,L36],
+	Row4=[L41,L42,L43,L44,L45,L46],
+	Row5=[L51,L52,L53,L54,L55,L56],
+	Row6=[L61,L62,L63,L64,L65,L66],
+
+	Col1=[L11,L21,L31,L41,L51,L61],
+	Col2=[L12,L22,L32,L42,L52,L62],
+	Col3=[L13,L23,L33,L43,L53,L63],
+	Col4=[L14,L24,L34,L44,L54,L64],
+	Col5=[L15,L25,L35,L45,L55,L65],
+	Col6=[L16,L26,L36,L46,L56,L66],
+
+	not(compare_list(Row1,Row2)),
+	not(compare_list(Row1,Row3)),
+	not(compare_list(Row1,Row4)),
+	not(compare_list(Row1,Row5)),
+	not(compare_list(Row1,Row6)),
+	not(compare_list(Row2,Row3)),
+	not(compare_list(Row2,Row4)),
+	not(compare_list(Row2,Row5)),
+	not(compare_list(Row2,Row6)),
+	not(compare_list(Row3,Row4)),
+	not(compare_list(Row3,Row5)),
+	not(compare_list(Row3,Row6)),
+	not(compare_list(Row4,Row5)),
+	not(compare_list(Row4,Row6)),
+	not(compare_list(Row5,Row6)),
+
+	not(compare_list(Col1,Col2)),
+	not(compare_list(Col1,Col3)),
+	not(compare_list(Col1,Col4)),
+	not(compare_list(Col1,Col5)),
+	not(compare_list(Col1,Col6)),
+	not(compare_list(Col2,Col3)),
+	not(compare_list(Col2,Col4)),
+	not(compare_list(Col2,Col5)),
+	not(compare_list(Col2,Col6)),
+	not(compare_list(Col3,Col4)),
+	not(compare_list(Col3,Col5)),
+	not(compare_list(Col3,Col6)),
+	not(compare_list(Col4,Col5)),
+	not(compare_list(Col4,Col6)),
+	not(compare_list(Col5,Col6)),
+
+	count(Row1,0,3),
+	count(Row2,0,3),
+	count(Row3,0,3),
+	count(Row4,0,3),
+	count(Row5,0,3),
+	count(Row6,0,3),
+
+	count(Col1,0,3),
+	count(Col2,0,3),
+	count(Col3,0,3),
+	count(Col4,0,3),
+	count(Col5,0,3),
+	count(Col6,0,3),
+
+	encode_direct(Row1,E),
+	decode(E,Row1),
+	encode_direct(Row2,F),
+	decode(F,Row2),
+	encode_direct(Row3,G),
+	decode(G,Row3),
+	encode_direct(Row4,H),
+	decode(H,Row4),
+	encode_direct(Row5,I),
+	decode(I,Row5),
+	encode_direct(Row6,J),
+	decode(J,Row6),
+
+	encode_direct(Col1,K),
+	decode(K,Col1),
+	encode_direct(Col2,Q),
+	decode(Q,Col2),
+	encode_direct(Col3,M),
+	decode(M,Col3),
+	encode_direct(Col4,N),
+	decode(N,Col4),
+	encode_direct(Col5,O),
+	decode(O,Col5),
+	encode_direct(Col6,P),
+	decode(P,Col6).
+
+jogo8x8(L):-
+	L=[L11,L12,L13,L14,L15,L16,L17,L18,
+	   L21,L22,L23,L24,L25,L26,L27,L28,
+	   L31,L32,L33,L34,L35,L36,L37,L38,
+	   L41,L42,L43,L44,L45,L46,L47,L48,
+	   L51,L52,L53,L54,L55,L56,L57,L58,
+	   L61,L62,L63,L64,L65,L66,L67,L68,
+	   L71,L72,L73,L74,L75,L76,L77,L78,
+	   L81,L82,L83,L84,L85,L86,L87,L88],
+
+	Row1=[L11,L12,L13,L14,L15,L16,L17,L18],
+	Row2=[L21,L22,L23,L24,L25,L26,L27,L28],
+	Row3=[L31,L32,L33,L34,L35,L36,L37,L38],
+	Row4=[L41,L42,L43,L44,L45,L46,L47,L48],
+	Row5=[L51,L52,L53,L54,L55,L56,L57,L58],
+	Row6=[L61,L62,L63,L64,L65,L66,L67,L68],
+	Row7=[L71,L72,L73,L74,L75,L76,L77,L78],
+	Row8=[L81,L82,L83,L84,L85,L86,L87,L88],
+
+	Col1=[L11,L21,L31,L41,L51,L61,L71,L81],
+	Col2=[L12,L22,L32,L42,L52,L62,L72,L82],
+	Col3=[L13,L23,L33,L43,L53,L63,L73,L83],
+	Col4=[L14,L24,L34,L44,L54,L64,L74,L84],
+	Col5=[L15,L25,L35,L45,L55,L65,L75,L85],
+	Col6=[L16,L26,L36,L46,L56,L66,L76,L86],
+	Col7=[L17,L27,L37,L47,L57,L67,L77,L87],
+	Col8=[L18,L28,L38,L48,L58,L68,L78,L88],
+
+	not(compare_list(Row1,Row2)),
+	not(compare_list(Row1,Row3)),
+	not(compare_list(Row1,Row4)),
+	not(compare_list(Row1,Row5)),
+	not(compare_list(Row1,Row6)),
+	not(compare_list(Row1,Row7)),
+	not(compare_list(Row1,Row8)),
+	not(compare_list(Row2,Row3)),
+	not(compare_list(Row2,Row4)),
+	not(compare_list(Row2,Row5)),
+	not(compare_list(Row2,Row6)),
+	not(compare_list(Row2,Row7)),
+	not(compare_list(Row2,Row8)),
+	not(compare_list(Row3,Row4)),
+	not(compare_list(Row3,Row5)),
+	not(compare_list(Row3,Row6)),
+	not(compare_list(Row3,Row7)),
+	not(compare_list(Row3,Row8)),
+	not(compare_list(Row4,Row5)),
+	not(compare_list(Row4,Row6)),
+	not(compare_list(Row4,Row7)),
+	not(compare_list(Row4,Row8)),
+	not(compare_list(Row5,Row6)),
+	not(compare_list(Row5,Row7)),
+	not(compare_list(Row5,Row8)),
+	not(compare_list(Row6,Row7)),
+	not(compare_list(Row6,Row8)),
+	not(compare_list(Row7,Row8)),
+
+	not(compare_list(Col1,Col2)),
+	not(compare_list(Col1,Col3)),
+	not(compare_list(Col1,Col4)),
+	not(compare_list(Col1,Col5)),
+	not(compare_list(Col1,Col6)),
+	not(compare_list(Col1,Col7)),
+	not(compare_list(Col1,Col8)),
+	not(compare_list(Col2,Col3)),
+	not(compare_list(Col2,Col4)),
+	not(compare_list(Col2,Col5)),
+	not(compare_list(Col2,Col6)),
+	not(compare_list(Col2,Col7)),
+	not(compare_list(Col2,Col8)),
+	not(compare_list(Col3,Col4)),
+	not(compare_list(Col3,Col5)),
+	not(compare_list(Col3,Col6)),
+	not(compare_list(Col3,Col7)),
+	not(compare_list(Col3,Col8)),
+	not(compare_list(Col4,Col5)),
+	not(compare_list(Col4,Col6)),
+	not(compare_list(Col4,Col7)),
+	not(compare_list(Col4,Col8)),
+	not(compare_list(Col5,Col6)),
+	not(compare_list(Col5,Col7)),
+	not(compare_list(Col5,Col8)),
+	not(compare_list(Col6,Col7)),
+	not(compare_list(Col6,Col8)),
+	not(compare_list(Col7,Col8)),
+
+
+	count(Row1,0,4),
+	count(Row2,0,4),
+	count(Row3,0,4),
+	count(Row4,0,4),
+	count(Row5,0,4),
+	count(Row6,0,4),
+	count(Row7,0,4),
+	count(Row8,0,4),
+
+	count(Col1,0,4),
+	count(Col2,0,4),
+	count(Col3,0,4),
+	count(Col4,0,4),
+	count(Col5,0,4),
+	count(Col6,0,4),
+	count(Col7,0,4),
+	count(Col8,0,4),
+
+	encode_direct(Row1,R),
+	decode(R,Row1),
+	encode_direct(Row2,S),
+	decode(S,Row2),
+	encode_direct(Row3,T),
+	decode(T,Row3),
+	encode_direct(Row4,U),
+	decode(U,Row4),
+	encode_direct(Row5,V),
+	decode(V,Row5),
+	encode_direct(Row6,W),
+	decode(W,Row6),
+	encode_direct(Row7,X),
+	decode(X,Row7),
+	encode_direct(Row8,Y),
+	decode(Y,Row8),
+
+	encode_direct(Col1,Z),
+	decode(Z,Col1),
+	encode_direct(Col2,AA),
+	decode(AA,Col2),
+	encode_direct(Col3,AB),
+	decode(AB,Col3),
+	encode_direct(Col4,AC),
+	decode(AC,Col4),
+	encode_direct(Col5,AD),
+	decode(AD,Col5),
+	encode_direct(Col6,AE),
+	decode(AE,Col6),
+	encode_direct(Col7,AF),
+	decode(AF,Col7),
+	encode_direct(Col8,AG),
+	decode(AG,Col8).
+
+jogo10x10(L):-
+	L=[L11,L12,L13,L14,L15,L16,L17,L18,L19,L110,
+	   L21,L22,L23,L24,L25,L26,L27,L28,L29,L210,
+	   L31,L32,L33,L34,L35,L36,L37,L38,L39,L310,
+	   L41,L42,L43,L44,L45,L46,L47,L48,L49,L410,
+	   L51,L52,L53,L54,L55,L56,L57,L58,L59,L510,
+	   L61,L62,L63,L64,L65,L66,L67,L68,L69,L610,
+	   L71,L72,L73,L74,L75,L76,L77,L78,L79,L710,
+	   L81,L82,L83,L84,L85,L86,L87,L88,L89,L810,
+	   L91,L92,L93,L94,L95,L96,L97,L98,L99,L910,
+	   L101,L102,L103,L104,L105,L106,L107,L108,L109,L1010],
+
+	Row1=[L11,L12,L13,L14,L15,L16,L17,L18,L19,L110],
+	Row2=[L21,L22,L23,L24,L25,L26,L27,L28,L29,L210],
+	Row3=[L31,L32,L33,L34,L35,L36,L37,L38,L39,L310],
+	Row4=[L41,L42,L43,L44,L45,L46,L47,L48,L49,L410],
+	Row5=[L51,L52,L53,L54,L55,L56,L57,L58,L59,L510],
+	Row6=[L61,L62,L63,L64,L65,L66,L67,L68,L69,L610],
+	Row7=[L71,L72,L73,L74,L75,L76,L77,L78,L79,L710],
+	Row8=[L81,L82,L83,L84,L85,L86,L87,L88,L89,L810],
+	Row9=[L91,L92,L93,L94,L95,L96,L97,L98,L99,L910],
+	Row10=[L101,L102,L103,L104,L105,L106,L107,L108,L109,L1010],
+
+	Col1=[L11,L21,L31,L41,L51,L61,L71,L81,L91,L101],
+	Col2=[L12,L22,L32,L42,L52,L62,L72,L82,L92,L102],
+	Col3=[L13,L23,L33,L43,L53,L63,L73,L83,L93,L103],
+	Col4=[L14,L24,L34,L44,L54,L64,L74,L84,L94,L104],
+	Col5=[L15,L25,L35,L45,L55,L65,L75,L85,L95,L105],
+	Col6=[L16,L26,L36,L46,L56,L66,L76,L86,L96,L106],
+	Col7=[L17,L27,L37,L47,L57,L67,L77,L87,L97,L107],
+	Col8=[L18,L28,L38,L48,L58,L68,L78,L88,L98,L108],
+	Col9=[L19,L29,L39,L49,L59,L69,L79,L89,L99,L109],
+	Col10=[L110,L210,L310,L410,L510,L610,L710,L810,L910,L1010],
+
+	not(compare_list(Row1,Row2)),
+	not(compare_list(Row1,Row3)),
+	not(compare_list(Row1,Row4)),
+	not(compare_list(Row1,Row5)),
+	not(compare_list(Row1,Row6)),
+	not(compare_list(Row1,Row7)),
+	not(compare_list(Row1,Row8)),
+	not(compare_list(Row1,Row9)),
+	not(compare_list(Row1,Row10)),
+	not(compare_list(Row2,Row3)),
+	not(compare_list(Row2,Row4)),
+	not(compare_list(Row2,Row5)),
+	not(compare_list(Row2,Row6)),
+	not(compare_list(Row2,Row7)),
+	not(compare_list(Row2,Row8)),
+	not(compare_list(Row2,Row9)),
+	not(compare_list(Row3,Row10)),
+	not(compare_list(Row3,Row4)),
+	not(compare_list(Row3,Row5)),
+	not(compare_list(Row3,Row6)),
+	not(compare_list(Row3,Row7)),
+	not(compare_list(Row3,Row8)),
+	not(compare_list(Row3,Row9)),
+	not(compare_list(Row3,Row10)),
+	not(compare_list(Row4,Row5)),
+	not(compare_list(Row4,Row6)),
+	not(compare_list(Row4,Row7)),
+	not(compare_list(Row4,Row8)),
+	not(compare_list(Row4,Row9)),
+	not(compare_list(Row4,Row10)),
+	not(compare_list(Row5,Row6)),
+	not(compare_list(Row5,Row7)),
+	not(compare_list(Row5,Row8)),
+	not(compare_list(Row5,Row9)),
+	not(compare_list(Row5,Row10)),
+	not(compare_list(Row6,Row7)),
+	not(compare_list(Row6,Row8)),
+	not(compare_list(Row6,Row9)),
+	not(compare_list(Row6,Row10)),
+	not(compare_list(Row7,Row8)),
+	not(compare_list(Row7,Row9)),
+	not(compare_list(Row7,Row10)),
+	not(compare_list(Row8,Row9)),
+	not(compare_list(Row8,Row10)),
+	not(compare_list(Row9,Row10)),
+
+	not(compare_list(Col1,Col2)),
+	not(compare_list(Col1,Col3)),
+	not(compare_list(Col1,Col4)),
+	not(compare_list(Col1,Col5)),
+	not(compare_list(Col1,Col6)),
+	not(compare_list(Col1,Col7)),
+	not(compare_list(Col1,Col8)),
+	not(compare_list(Col1,Col9)),
+	not(compare_list(Col1,Col10)),
+	not(compare_list(Col2,Col3)),
+	not(compare_list(Col2,Col4)),
+	not(compare_list(Col2,Col5)),
+	not(compare_list(Col2,Col6)),
+	not(compare_list(Col2,Col7)),
+	not(compare_list(Col2,Col8)),
+	not(compare_list(Col2,Col9)),
+	not(compare_list(Col2,Col10)),
+	not(compare_list(Col3,Col4)),
+	not(compare_list(Col3,Col5)),
+	not(compare_list(Col3,Col6)),
+	not(compare_list(Col3,Col7)),
+	not(compare_list(Col3,Col8)),
+	not(compare_list(Col3,Col9)),
+	not(compare_list(Col3,Col10)),
+	not(compare_list(Col4,Col5)),
+	not(compare_list(Col4,Col6)),
+	not(compare_list(Col4,Col7)),
+	not(compare_list(Col4,Col8)),
+	not(compare_list(Col4,Col9)),
+	not(compare_list(Col4,Col10)),
+	not(compare_list(Col5,Col6)),
+	not(compare_list(Col5,Col7)),
+	not(compare_list(Col5,Col8)),
+	not(compare_list(Col5,Col9)),
+	not(compare_list(Col5,Col10)),
+	not(compare_list(Col6,Col7)),
+	not(compare_list(Col6,Col8)),
+	not(compare_list(Col6,Col9)),
+	not(compare_list(Col6,Col10)),
+	not(compare_list(Col7,Col8)),
+	not(compare_list(Col7,Col9)),
+	not(compare_list(Col7,Col10)),
+	not(compare_list(Col8,Col9)),
+	not(compare_list(Col8,Col10)),
+	not(compare_list(Col9,Col10)),
+
+
+	count(Row1,0,5),
+	count(Row2,0,5),
+	count(Row3,0,5),
+	count(Row4,0,5),
+	count(Row5,0,5),
+	count(Row6,0,5),
+	count(Row7,0,5),
+	count(Row8,0,5),
+	count(Row9,0,5),
+	count(Row10,0,5),
+
+	count(Col1,0,5),
+	count(Col2,0,5),
+	count(Col3,0,5),
+	count(Col4,0,5),
+	count(Col5,0,5),
+	count(Col6,0,5),
+	count(Col7,0,5),
+	count(Col8,0,5),
+	count(Col9,0,5),
+	count(Col10,0,5),
+
+	encode_direct(Row1,AH),
+	decode(AH,Row1),
+	encode_direct(Row2,AI),
+	decode(AI,Row2),
+	encode_direct(Row3,AJ),
+	decode(AJ,Row3),
+	encode_direct(Row4,AK),
+	decode(AK,Row4),
+	encode_direct(Row5,AL),
+	decode(AL,Row5),
+	encode_direct(Row6,AM),
+	decode(AM,Row6),
+	encode_direct(Row7,AN),
+	decode(AN,Row7),
+	encode_direct(Row8,AO),
+	decode(AO,Row8),
+	encode_direct(Row9,AP),
+	decode(AP,Row9),
+	encode_direct(Row10,AQ),
+	decode(AQ,Row10),
+
+	encode_direct(Col1,AR),
+	decode(AR,Col1),
+	encode_direct(Col2,AS),
+	decode(AS,Col2),
+	encode_direct(Col3,AT),
+	decode(AT,Col3),
+	encode_direct(Col4,AU),
+	decode(AU,Col4),
+	encode_direct(Col5,AV),
+	decode(AV,Col5),
+	encode_direct(Col6,AX),
+	decode(AX,Col6),
+	encode_direct(Col7,AY),
+	decode(AY,Col7),
+	encode_direct(Col8,AZ),
+	decode(AZ,Col8),
+	encode_direct(Col9,BA),
+	decode(BA,Col9),
+	encode_direct(Col10,BB),
+	decode(BB,Col10).
+
+
+
+
+
+
+/*Faz o decode das linhas e colunas e devolve true se N>1 e N<3, e false nos outros casos*/
+
+decode([],[]).
+decode([X|Ys],[X|Zs]) :- \+ is_list(X), decode(Ys,Zs).
+decode([[1,X]|Ys],[X|Zs]) :- decode(Ys,Zs).
+decode([[N,X]|Ys],[X|Zs]) :- N>1, N<3, N1 is N - 1, decode([[N1,X]|Ys],Zs).
+/*Faz o encode directo das linhas e colunas*/
+
+encode_direct([],[]).
+encode_direct([X|Xs],[Z|Zs]) :- count2(X,Xs,Ys,1,Z), encode_direct(Ys,Zs).
+
+count2(X,[],[],1,X).
+count2(X,[],[],N,[N,X]) :- N > 1.
+count2(X,[Y|Ys],[Y|Ys],1,X) :- X \= Y.
+count2(X,[Y|Ys],[Y|Ys],N,[N,X]) :- N > 1, X \= Y.
+count2(X,[X|Xs],Ys,K,T) :- K1 is K + 1, count2(X,Xs,Ys,K1,T).
+/*conta quantas vezes um determinado elemento aparece na lista*/
+
+count([],_,0).
+count([X|Y],X,N) :- count(Y,X,W), N is W + 1.
+count([X|Y],Z,N) :- count(Y,Z,N), X\=Z.
+
+/*compara duas listas e verifica se são iguais. Devolve true se forem, ou false se não forem iguais.*/
+
+compare_list([],[]).
+compare_list([H1|T1],[H2|T2]) :- H1==H2, compare_list(T1,T2).
